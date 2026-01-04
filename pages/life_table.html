@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生命表 - 保险精算学习平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-img {
+            width: 200px; 
+            height: 40px; 
+            object-fit: contain; 
+            filter: brightness(0) invert(1) hue-rotate(180deg) saturate(0);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #1e3c72;
+            border-bottom: 3px solid #2a5298;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .content-section {
+            margin-bottom: 3rem;
+        }
+
+        .content-section h3 {
+            color: #2a5298;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .content-section p {
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .formula {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border-left: 4px solid #2a5298;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #2a5298;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .example {
+            background: #e8f4fd;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .example h4 {
+            color: #1e3c72;
+            margin-bottom: 0.5rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: transform 0.3s;
+            margin-bottom: 2rem;
+        }
+
+        .back-button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #2a5298, #3a62a8);
+        }
+
+        .calculator-section {
+            background: #f0f8ff;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .calculator-title {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1e3c72;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .btn-calculate:hover {
+            transform: scale(1.05);
+        }
+
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #e8f4fd;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .summary {
+            background: #e8f5e9;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-top: 2rem;
+            border-left: 4px solid #4caf50;
+        }
+
+        .summary h3 {
+            color: #2e7d32;
+            margin-bottom: 1rem;
+        }
+
+        .summary ul {
+            padding-left: 1.5rem;
+        }
+
+        .summary li {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="../logo.png" alt="Logo" class="logo-img" />
+            <div class="logo-text">保险精算学习平台</div>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">返回首页</a>
+            <a href="present_value.html">下一节：精算现值</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <a href="../index.html" class="back-button">← 返回首页</a>
+        
+        <h1 class="section-title">生命表</h1>
+        
+        <div class="content-section">
+            <h3>1. 生命表概述</h3>
+            <p>生命表（Life Table）是描述特定人群死亡规律的统计表，是寿险精算的基础工具。它记录了从出生开始，不同年龄的生存人数、死亡人数、死亡概率等统计信息。</p>
+        </div>
+        
+        <div class="content-section">
+            <h3>2. 生命表的主要指标</h3>
+            <p><strong>lx</strong>：表示在年龄x时的生存人数（基数通常为100,000人）</p>
+            <p><strong>dx</strong>：表示在年龄x到x+1之间死亡的人数</p>
+            <p><strong>qx</strong>：表示年龄x的人在下一个年龄死亡的概率</p>
+            <p><strong>px</strong>：表示年龄x的人存活到x+1岁的概率</p>
+            
+            <div class="formula">
+                dx = lx - lx+1<br>
+                qx = dx / lx<br>
+                px = 1 - qx
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3>3. 示例生命表</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>年龄x</th>
+                            <th>lx</th>
+                            <th>dx</th>
+                            <th>qx</th>
+                            <th>px</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td>100,000</td>
+                            <td>500</td>
+                            <td>0.0050</td>
+                            <td>0.9950</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>99,500</td>
+                            <td>100</td>
+                            <td>0.0010</td>
+                            <td>0.9990</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>99,400</td>
+                            <td>80</td>
+                            <td>0.0008</td>
+                            <td>0.9992</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>99,320</td>
+                            <td>70</td>
+                            <td>0.0007</td>
+                            <td>0.9993</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>99,250</td>
+                            <td>65</td>
+                            <td>0.0007</td>
+                            <td>0.9993</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>99,185</td>
+                            <td>60</td>
+                            <td>0.0006</td>
+                            <td>0.9994</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3>4. 生存函数与死亡函数</h3>
+            <p><strong>生存函数 S(x)</strong>：表示年龄为x的人能够生存到年龄x+t的概率</p>
+            <div class="formula">
+                S(x) = lx / l0
+            </div>
+            
+            <p><strong>死亡函数 F(x)</strong>：表示年龄为x的人在年龄x+t之前死亡的概率</p>
+            <div class="formula">
+                F(x) = 1 - S(x) = (l0 - lx) / l0
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3>5. 期望寿命</h3>
+            <p><strong>ex</strong>：表示年龄x的人的期望剩余寿命</p>
+            <div class="formula">
+                ex = Σ(t=1 to ∞) t * tpx = Σ(t=1 to ∞) lx+t / lx
+            </div>
+            
+            <p>其中tpx表示年龄x的人能够生存t年的概率。</p>
+        </div>
+        
+        <div class="calculator-section">
+            <h3 class="calculator-title">生命表计算工具</h3>
+            
+            <div class="input-group">
+                <label>当前年龄：</label>
+                <input type="number" id="currentAge" placeholder="请输入当前年龄" min="0" max="120">
+            </div>
+            
+            <div class="input-group">
+                <label>未来年龄：</label>
+                <input type="number" id="futureAge" placeholder="请输入未来年龄" min="0" max="120">
+            </div>
+            
+            <button class="btn-calculate" onclick="calculateSurvival()">计算生存概率</button>
+            
+            <div id="result" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="example">
+            <h4>实例分析</h4>
+            <p>根据生命表，假设某人现在30岁，想计算其在60岁前死亡的概率。</p>
+            <p>已知：l30 = 99,000，l60 = 95,000</p>
+            <div class="formula">
+                30p30 = l60 / l30 = 95,000 / 99,000 = 0.9596<br>
+                30q30 = 1 - 30p30 = 1 - 0.9596 = 0.0404
+            </div>
+            <p>这意味着30岁的人在60岁前死亡的概率约为4.04%。</p>
+        </div>
+        
+        <div class="summary">
+            <h3>本节要点总结</h3>
+            <ul>
+                <li>生命表是描述特定人群死亡规律的统计表，是寿险精算的基础工具</li>
+                <li>主要指标包括lx（生存人数）、dx（死亡人数）、qx（死亡概率）、px（生存概率）</li>
+                <li>生存函数S(x)和死亡函数F(x)描述了生存和死亡的概率分布</li>
+                <li>期望寿命ex表示年龄x的人的期望剩余寿命</li>
+                <li>生命表用于计算寿险产品的保险费、准备金和理赔金额</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="interest_theory.html" class="back-button">← 上一节：利息理论</a>
+            <a href="present_value.html" class="back-button" style="margin-left: 1rem;">下一节：精算现值 →</a>
+        </div>
+    </main>
+
+    <script>
+        function calculateSurvival() {
+            const currentAge = parseInt(document.getElementById('currentAge').value);
+            const futureAge = parseInt(document.getElementById('futureAge').value);
+            
+            if (isNaN(currentAge) || isNaN(futureAge)) {
+                alert('请填写所有字段');
+                return;
+            }
+            
+            if (currentAge >= futureAge) {
+                alert('未来年龄必须大于当前年龄');
+                return;
+            }
+            
+            // 模拟生命表数据
+            const baseSurvival = 100000;
+            const deathRate = 0.001; // 简化假设的死亡率
+            
+            // 简化计算：基于指数衰减模型
+            const years = futureAge - currentAge;
+            const survivalProbability = Math.pow(1 - deathRate, years);
+            const deathProbability = 1 - survivalProbability;
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <p><strong>计算结果：</strong></p>
+                <p>${currentAge}岁的人活到${futureAge}岁的概率：${(survivalProbability * 100).toFixed(4)}%</p>
+                <p>${currentAge}岁的人在${futureAge}岁前死亡的概率：${(deathProbability * 100).toFixed(4)}%</p>
+            `;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

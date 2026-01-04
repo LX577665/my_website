@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>精算现值 - 保险精算学习平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-img {
+            width: 200px; 
+            height: 40px; 
+            object-fit: contain; 
+            filter: brightness(0) invert(1) hue-rotate(180deg) saturate(0);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #1e3c72;
+            border-bottom: 3px solid #2a5298;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .content-section {
+            margin-bottom: 3rem;
+        }
+
+        .content-section h3 {
+            color: #2a5298;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .content-section p {
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .formula {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border-left: 4px solid #2a5298;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+        }
+
+        .example {
+            background: #e8f4fd;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .example h4 {
+            color: #1e3c72;
+            margin-bottom: 0.5rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: transform 0.3s;
+            margin-bottom: 2rem;
+        }
+
+        .back-button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #2a5298, #3a62a8);
+        }
+
+        .calculator-section {
+            background: #f0f8ff;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .calculator-title {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1e3c72;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .btn-calculate:hover {
+            transform: scale(1.05);
+        }
+
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #e8f4fd;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .summary {
+            background: #e8f5e9;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-top: 2rem;
+            border-left: 4px solid #4caf50;
+        }
+
+        .summary h3 {
+            color: #2e7d32;
+            margin-bottom: 1rem;
+        }
+
+        .summary ul {
+            padding-left: 1.5rem;
+        }
+
+        .summary li {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="../logo.png" alt="Logo" class="logo-img" />
+            <div class="logo-text">保险精算学习平台</div>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">返回首页</a>
+            <a href="claim_frequency.html">下一节：索赔次数（离散分布）</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <a href="../index.html" class="back-button">← 返回首页</a>
+        
+        <h1 class="section-title">精算现值</h1>
+        
+        <div class="content-section">
+            <h3>1. 精算现值概述</h3>
+            <p>精算现值（Actuarial Present Value）是保险精算中的核心概念，它将未来不确定的保险给付按一定的利率和概率折算到现在的价值。精算现值是计算保险费、责任准备金和保险产品定价的基础。</p>
+        </div>
+        
+        <div class="content-section">
+            <h3>2. 精算现值的基本公式</h3>
+            <p><strong>一元期末给付的精算现值</strong>（用Ax表示）：</p>
+            <div class="formula">
+                Ax = Σ(k=0 to ∞) vk+1 × kpx × qx+k
+            </div>
+            <p>其中：v = 1/(1+i) 为折现因子，i为年利率，kpx为年龄x的人生存k年的概率，qx+k为年龄x+k的人在一年内死亡的概率。</p>
+            
+            <p><strong>一元期初给付的精算现值</strong>（用&Auml;x表示）：</p>
+            <div class="formula">
+                &Auml;x = Σ(k=0 to ∞) vk × kpx × qx+k
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3>3. 年金的精算现值</h3>
+            <p><strong>期初付年金</strong>（用&ax表示）：</p>
+            <div class="formula">
+                &ax = Σ(k=0 to ∞) vk × kpx
+            </div>
+            
+            <p><strong>期末付年金</strong>（用ax表示）：</p>
+            <div class="formula">
+                ax = Σ(k=1 to ∞) vk × kpx
+            </div>
+            
+            <p>两者关系：&ax = 1 + ax</p>
+        </div>
+        
+        <div class="content-section">
+            <h3>4. 精算现值的性质</h3>
+            <p><strong>线性性</strong>：如果保险合同包含多个给付项目，总的精算现值等于各项目精算现值之和。</p>
+            <p><strong>递推关系</strong>：精算现值满足一定的递推关系，这在实际计算中非常有用。</p>
+            <p><strong>利率敏感性</strong>：精算现值随着利率的提高而降低，随着利率的降低而提高。</p>
+        </div>
+        
+        <div class="calculator-section">
+            <h3 class="calculator-title">精算现值计算工具</h3>
+            
+            <div class="input-group">
+                <label>当前年龄：</label>
+                <input type="number" id="currentAge" placeholder="请输入当前年龄" min="0" max="100">
+            </div>
+            
+            <div class="input-group">
+                <label>保险金额（元）：</label>
+                <input type="number" id="insuranceAmount" placeholder="请输入保险金额" min="0">
+            </div>
+            
+            <div class="input-group">
+                <label>年利率（%）：</label>
+                <input type="number" id="interestRate" placeholder="请输入年利率（如3表示3%）" step="0.01">
+            </div>
+            
+            <button class="btn-calculate" onclick="calculateAPV()">计算精算现值</button>
+            
+            <div id="result" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="example">
+            <h4>实例分析</h4>
+            <p>某30岁男性购买了一份保额为100万元的终身寿险，年利率为3%，根据生命表计算其精算现值。</p>
+            <p>假设根据生命表和利息理论计算得到30岁男性的Ax = 0.15，即：</p>
+            <div class="formula">
+                精算现值 = 保险金额 × Ax<br>
+                = 1,000,000 × 0.15 = 150,000元
+            </div>
+            <p>这意味着保险公司需要准备15万元作为该保单的责任准备金。</p>
+        </div>
+        
+        <div class="summary">
+            <h3>本节要点总结</h3>
+            <ul>
+                <li>精算现值是将未来不确定的保险给付按利率和概率折算到现在的价值</li>
+                <li>期末给付精算现值Ax和期初给付精算现值&Auml;x是基本概念</li>
+                <li>年金的精算现值&ax和ax用于计算年金保险的现值</li>
+                <li>精算现值具有线性性、递推关系和利率敏感性等重要性质</li>
+                <li>精算现值是计算保险费、责任准备金和保险产品定价的基础</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="life_table.html" class="back-button">← 上一节：生命表</a>
+            <a href="../index.html" class="back-button" style="margin-left: 1rem;">返回首页</a>
+        </div>
+    </main>
+
+    <script>
+        function calculateAPV() {
+            const currentAge = parseInt(document.getElementById('currentAge').value);
+            const insuranceAmount = parseFloat(document.getElementById('insuranceAmount').value);
+            const interestRate = parseFloat(document.getElementById('interestRate').value) / 100;
+            
+            if (isNaN(currentAge) || isNaN(insuranceAmount) || isNaN(interestRate)) {
+                alert('请填写所有字段');
+                return;
+            }
+            
+            // 简化计算：基于年龄和利率估算精算现值系数
+            // 实际应用中需要使用完整的生命表数据
+            let apvFactor = 0.1; // 基础系数
+            
+            // 根据年龄调整系数（年龄越大，死亡概率越高，现值系数越大）
+            if (currentAge > 50) {
+                apvFactor = 0.15 + (currentAge - 50) * 0.002;
+            } else if (currentAge > 30) {
+                apvFactor = 0.1 + (currentAge - 30) * 0.001;
+            }
+            
+            // 根据利率调整系数（利率越高，现值系数越小）
+            apvFactor = apvFactor / (1 + interestRate);
+            
+            const apv = insuranceAmount * apvFactor;
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <p><strong>计算结果：</strong></p>
+                <p>精算现值系数：${apvFactor.toFixed(4)}</p>
+                <p>保险金额：${insuranceAmount.toLocaleString()} 元</p>
+                <p>精算现值：${apv.toLocaleString('zh-CN', { maximumFractionDigits: 2 })} 元</p>
+            `;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

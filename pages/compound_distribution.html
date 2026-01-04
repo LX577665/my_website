@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>复合分布 - 保险精算学习平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-img {
+            width: 200px; 
+            height: 40px; 
+            object-fit: contain; 
+            filter: brightness(0) invert(1) hue-rotate(180deg) saturate(0);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #1e3c72;
+            border-bottom: 3px solid #2a5298;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .content-section {
+            margin-bottom: 3rem;
+        }
+
+        .content-section h3 {
+            color: #2a5298;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .content-section p {
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .formula {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border-left: 4px solid #2a5298;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+        }
+
+        .example {
+            background: #e8f4fd;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .example h4 {
+            color: #1e3c72;
+            margin-bottom: 0.5rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: transform 0.3s;
+            margin-bottom: 2rem;
+        }
+
+        .back-button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #2a5298, #3a62a8);
+        }
+
+        .calculator-section {
+            background: #f0f8ff;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .calculator-title {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1e3c72;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .btn-calculate:hover {
+            transform: scale(1.05);
+        }
+
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #e8f4fd;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .summary {
+            background: #e8f5e9;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-top: 2rem;
+            border-left: 4px solid #4caf50;
+        }
+
+        .summary h3 {
+            color: #2e7d32;
+            margin-bottom: 1rem;
+        }
+
+        .summary ul {
+            padding-left: 1.5rem;
+        }
+
+        .summary li {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="../logo.png" alt="Logo" class="logo-img" />
+            <div class="logo-text">保险精算学习平台</div>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">返回首页</a>
+            <a href="rate_making.html">下一节：费率厘定</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <a href="../index.html" class="back-button">← 返回首页</a>
+        
+        <h1 class="section-title">复合分布</h1>
+        
+        <div class="content-section">
+            <h3>1. 复合分布概述</h3>
+            <p>复合分布（Compound Distribution）是保险精算中的重要概念，用于描述总索赔量的分布。它结合了索赔次数分布和索赔金额分布，是风险模型的核心组成部分。</p>
+        </div>
+        
+        <div class="content-section">
+            <h3>2. 复合分布的定义</h3>
+            <p>设N为索赔次数，X₁, X₂, ..., XN为各次索赔金额，则总索赔量S定义为：</p>
+            <div class="formula">
+                S = X₁ + X₂ + ... + XN = Σ(i=1 to N) Xi
+            </div>
+            <p>当N = 0时，S = 0。</p>
+            
+            <p>总索赔量S的分布称为复合分布，记为复合分布F_S(x)。</p>
+        </div>
+        
+        <div class="content-section">
+            <h3>3. 复合泊松分布</h3>
+            <p>当索赔次数N服从参数为λ的泊松分布时，总索赔量S服从复合泊松分布。</p>
+            <div class="formula">
+                P(S ≤ x) = Σ(n=0 to ∞) [e^(-λ) * λ^n / n!] * P(X₁ + X₂ + ... + Xn ≤ x)
+            </div>
+            
+            <p><strong>复合泊松分布的性质：</strong></p>
+            <ul>
+                <li>均值：E(S) = E(N) * E(X) = λ * E(X)</li>
+                <li>方差：Var(S) = E(N) * Var(X) + Var(N) * [E(X)]² = λ * [Var(X) + (E(X))²]</li>
+                <li>矩母函数：M_S(t) = exp[λ(M_X(t) - 1)]</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h3>4. 复合二项分布</h3>
+            <p>当索赔次数N服从参数为(n, p)的二项分布时，总索赔量S服从复合二项分布。</p>
+            <div class="formula">
+                P(S ≤ x) = Σ(k=0 to n) C(n,k) * p^k * (1-p)^(n-k) * P(X₁ + X₂ + ... + Xk ≤ x)
+            </div>
+            
+            <p><strong>复合二项分布的性质：</strong></p>
+            <ul>
+                <li>均值：E(S) = E(N) * E(X) = np * E(X)</li>
+                <li>方差：Var(S) = E(N) * Var(X) + Var(N) * [E(X)]² = np * [Var(X) + (1-p)(E(X))²]</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h3>5. 复合负二项分布</h3>
+            <p>当索赔次数N服从负二项分布时，总索赔量S服从复合负二项分布。</p>
+            <div class="formula">
+                P(S ≤ x) = Σ(k=0 to ∞) C(k+r-1, k) * p^r * (1-p)^k * P(X₁ + X₂ + ... + Xk ≤ x)
+            </div>
+            
+            <p><strong>复合负二项分布的性质：</strong></p>
+            <ul>
+                <li>均值：E(S) = E(N) * E(X) = r(1-p)/p * E(X)</li>
+                <li>方差：Var(S) = E(N) * Var(X) + Var(N) * [E(X)]²</li>
+            </ul>
+        </div>
+        
+        <div class="calculator-section">
+            <h3 class="calculator-title">复合分布计算器</h3>
+            
+            <div class="input-group">
+                <label>平均索赔次数（λ）：</label>
+                <input type="number" id="lambda" placeholder="请输入平均索赔次数" step="0.01">
+            </div>
+            
+            <div class="input-group">
+                <label>平均索赔金额（μ）：</label>
+                <input type="number" id="meanAmount" placeholder="请输入平均索赔金额" step="0.01">
+            </div>
+            
+            <div class="input-group">
+                <label>索赔金额方差（σ²）：</label>
+                <input type="number" id="varAmount" placeholder="请输入索赔金额方差" step="0.01">
+            </div>
+            
+            <button class="btn-calculate" onclick="calculateCompound()">计算复合分布特征</button>
+            
+            <div id="result" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="example">
+            <h4>实例分析</h4>
+            <p>某车险组合，索赔次数服从泊松分布，λ = 5，单次索赔金额服从指数分布，均值μ = 2000元，试分析总索赔量的分布特征。</p>
+            <div class="formula">
+                E(S) = λ * μ = 5 * 2000 = 10,000元<br>
+                Var(S) = λ * [Var(X) + μ²] = 5 * [2000² + 2000²] = 5 * 8,000,000 = 40,000,000<br>
+                标准差 = √40,000,000 ≈ 6,325元
+            </div>
+            <p>这意味着总索赔量的期望值为10,000元，标准差约为6,325元，表明存在较大的风险波动。</p>
+        </div>
+        
+        <div class="summary">
+            <h3>本节要点总结</h3>
+            <ul>
+                <li>复合分布结合了索赔次数分布和索赔金额分布</li>
+                <li>复合泊松分布是最常用的复合分布模型</li>
+                <li>复合分布的均值等于索赔次数均值乘以索赔金额均值</li>
+                <li>复合分布的方差包含两部分：索赔金额的变异性与索赔次数的变异性</li>
+                <li>复合分布是风险模型和准备金计算的基础</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="claim_amount.html" class="back-button">← 上一节：索赔金额（连续分布）</a>
+            <a href="rate_making.html" class="back-button" style="margin-left: 1rem;">下一节：费率厘定 →</a>
+        </div>
+    </main>
+
+    <script>
+        function calculateCompound() {
+            const lambda = parseFloat(document.getElementById('lambda').value);
+            const meanAmount = parseFloat(document.getElementById('meanAmount').value);
+            const varAmount = parseFloat(document.getElementById('varAmount').value);
+            
+            if (isNaN(lambda) || isNaN(meanAmount) || isNaN(varAmount)) {
+                alert('请填写所有字段');
+                return;
+            }
+            
+            if (lambda <= 0 || meanAmount <= 0 || varAmount < 0) {
+                alert('参数值必须为正数（方差非负）');
+                return;
+            }
+            
+            // 计算复合泊松分布的特征
+            const expectedTotal = lambda * meanAmount;
+            const varianceTotal = lambda * (varAmount + Math.pow(meanAmount, 2));
+            const stdDevTotal = Math.sqrt(varianceTotal);
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <p><strong>复合分布计算结果（复合泊松分布）：</strong></p>
+                <p>总索赔量均值：${expectedTotal.toFixed(2)} 元</p>
+                <p>总索赔量方差：${varianceTotal.toFixed(2)} 元²</p>
+                <p>总索赔量标准差：${stdDevTotal.toFixed(2)} 元</p>
+            `;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>费率厘定 - 保险精算学习平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-img {
+            width: 200px; 
+            height: 40px; 
+            object-fit: contain; 
+            filter: brightness(0) invert(1) hue-rotate(180deg) saturate(0);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #1e3c72;
+            border-bottom: 3px solid #2a5298;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .content-section {
+            margin-bottom: 3rem;
+        }
+
+        .content-section h3 {
+            color: #2a5298;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .content-section p {
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .formula {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border-left: 4px solid #2a5298;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #2a5298;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .example {
+            background: #e8f4fd;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .example h4 {
+            color: #1e3c72;
+            margin-bottom: 0.5rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: transform 0.3s;
+            margin-bottom: 2rem;
+        }
+
+        .back-button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #2a5298, #3a62a8);
+        }
+
+        .calculator-section {
+            background: #f0f8ff;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .calculator-title {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1e3c72;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .btn-calculate:hover {
+            transform: scale(1.05);
+        }
+
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #e8f4fd;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .summary {
+            background: #e8f5e9;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-top: 2rem;
+            border-left: 4px solid #4caf50;
+        }
+
+        .summary h3 {
+            color: #2e7d32;
+            margin-bottom: 1rem;
+        }
+
+        .summary ul {
+            padding-left: 1.5rem;
+        }
+
+        .summary li {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="../logo.png" alt="Logo" class="logo-img" />
+            <div class="logo-text">保险精算学习平台</div>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">返回首页</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <a href="../index.html" class="back-button">← 返回首页</a>
+        
+        <h1 class="section-title">费率厘定</h1>
+        
+        <div class="content-section">
+            <h3>1. 费率厘定概述</h3>
+            <p>费率厘定（Rate Making）是保险精算的核心任务之一，是指基于风险评估和统计模型，科学确定保险费率的过程。合理的费率既能保证保险公司的财务稳健，又能体现风险与费率的对应关系。</p>
+        </div>
+        
+        <div class="content-section">
+            <h3>2. 费率厘定的基本原理</h3>
+            <p>保险费率的确定遵循以下基本原理：</p>
+            <div class="formula">
+                费率 = 风险成本 + 安全附加 + 营业费用 + 预期利润
+            </div>
+            
+            <p><strong>风险成本</strong>：预期的赔款成本，是费率的基础部分</p>
+            <p><strong>安全附加</strong>：用于应对实际损失超出预期的不确定性</p>
+            <p><strong>营业费用</strong>：包括销售、管理、理赔等运营成本</p>
+            <p><strong>预期利润</strong>：保险公司期望获得的合理回报</p>
+        </div>
+        
+        <div class="content-section">
+            <h3>3. 纯保费法（Pure Premium Method）</h3>
+            <p>纯保费法是费率厘定的基本方法之一，其核心思想是先确定纯保费，再考虑附加费用。</p>
+            <div class="formula">
+                纯保费 = 预期总赔款 / 承保单位数<br>
+                费率 = 纯保费 / (1 - 费用比率)
+            </div>
+            
+            <p>其中费用比率包括营业费用、税金、利润等占总保费的比例。</p>
+        </div>
+        
+        <div class="content-section">
+            <h3>4. 损失率法（Loss Ratio Method）</h3>
+            <p>损失率法基于预期损失率来确定费率，损失率是赔款与保费的比率。</p>
+            <div class="formula">
+                费率 = (预期损失率 + 费用比率) / (1 - 预期损失率 - 费用比率)
+            </div>
+            
+            <p>该方法特别适用于已有经验数据的险种。</p>
+        </div>
+        
+        <div class="content-section">
+            <h3>5. 分类费率厘定</h3>
+            <p>根据风险特征将被保险人划分为不同风险类别，对不同类别确定不同费率。</p>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>风险类别</th>
+                            <th>基准费率</th>
+                            <th>风险因子</th>
+                            <th>调整后费率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>低风险</td>
+                            <td>1.0</td>
+                            <td>0.8</td>
+                            <td>0.8</td>
+                        </tr>
+                        <tr>
+                            <td>标准风险</td>
+                            <td>1.0</td>
+                            <td>1.0</td>
+                            <td>1.0</td>
+                        </tr>
+                        <tr>
+                            <td>高风险</td>
+                            <td>1.0</td>
+                            <td>1.5</td>
+                            <td>1.5</td>
+                        </tr>
+                        <tr>
+                            <td>极高风险</td>
+                            <td>1.0</td>
+                            <td>2.0</td>
+                            <td>2.0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3>6. 经验费率调整</h3>
+            <p>基于被保险人的历史经验数据调整费率，体现"好风险"享受优惠、"坏风险"承担更高费用的原则。</p>
+            <p><strong>贝叶斯保费公式：</strong></p>
+            <div class="formula">
+                Z = n / (n + k)<br>
+                贝叶斯保费 = Z × 观察到的损失率 + (1 - Z) × 预期损失率
+            </div>
+            <p>其中：Z为信度因子，n为观察期数，k为完全信度所需观察期数。</p>
+        </div>
+        
+        <div class="calculator-section">
+            <h3 class="calculator-title">费率厘定计算器</h3>
+            
+            <div class="input-group">
+                <label>预期总赔款（元）：</label>
+                <input type="number" id="expectedLoss" placeholder="请输入预期总赔款" min="0">
+            </div>
+            
+            <div class="input-group">
+                <label>承保单位数：</label>
+                <input type="number" id="exposure" placeholder="请输入承保单位数" min="1">
+            </div>
+            
+            <div class="input-group">
+                <label>费用比率（%）：</label>
+                <input type="number" id="expenseRatio" placeholder="请输入费用比率（如25表示25%）" step="0.01">
+            </div>
+            
+            <div class="input-group">
+                <label>安全附加（%）：</label>
+                <input type="number" id="safetyMargin" placeholder="请输入安全附加（如10表示10%）" step="0.01">
+            </div>
+            
+            <button class="btn-calculate" onclick="calculateRate()">计算费率</button>
+            
+            <div id="result" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="example">
+            <h4>实例分析</h4>
+            <p>某车险组合，预期总赔款为1,000,000元，承保单位数为1000辆，费用比率为25%，安全附加为10%，试计算保险费率。</p>
+            <div class="formula">
+                纯保费 = 1,000,000 / 1000 = 1,000元/辆<br>
+                费率 = 1,000 / (1 - 0.25 - 0.10) = 1,000 / 0.65 = 1,538元/辆
+            </div>
+            <p>因此，该车险的基准费率为1,538元/辆。</p>
+        </div>
+        
+        <div class="summary">
+            <h3>本节要点总结</h3>
+            <ul>
+                <li>费率厘定是保险精算的核心任务，需平衡风险与收益</li>
+                <li>纯保费法是费率厘定的基础方法</li>
+                <li>损失率法适用于有经验数据的险种</li>
+                <li>分类费率体现不同风险类别的差异化定价</li>
+                <li>经验费率调整体现历史经验对费率的影响</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="compound_distribution.html" class="back-button">← 上一节：复合分布</a>
+            <a href="../index.html" class="back-button" style="margin-left: 1rem;">返回首页</a>
+        </div>
+    </main>
+
+    <script>
+        function calculateRate() {
+            const expectedLoss = parseFloat(document.getElementById('expectedLoss').value);
+            const exposure = parseFloat(document.getElementById('exposure').value);
+            const expenseRatio = parseFloat(document.getElementById('expenseRatio').value) / 100;
+            const safetyMargin = parseFloat(document.getElementById('safetyMargin').value) / 100;
+            
+            if (isNaN(expectedLoss) || isNaN(exposure) || isNaN(expenseRatio) || isNaN(safetyMargin)) {
+                alert('请填写所有字段');
+                return;
+            }
+            
+            if (exposure <= 0) {
+                alert('承保单位数必须大于0');
+                return;
+            }
+            
+            // 计算纯保费
+            const purePremium = expectedLoss / exposure;
+            
+            // 计算费率（使用纯保费法）
+            const totalRatio = expenseRatio + safetyMargin;
+            if (totalRatio >= 1) {
+                alert('费用比率与安全附加之和不能超过100%');
+                return;
+            }
+            
+            const rate = purePremium / (1 - totalRatio);
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <p><strong>费率厘定计算结果：</strong></p>
+                <p>纯保费：${purePremium.toFixed(2)} 元/单位</p>
+                <p>费用比率：${(expenseRatio * 100).toFixed(2)}%</p>
+                <p>安全附加：${(safetyMargin * 100).toFixed(2)}%</p>
+                <p>保险费率：${rate.toFixed(2)} 元/单位</p>
+            `;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

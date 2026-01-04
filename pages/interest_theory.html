@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>利息理论 - 保险精算学习平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-img {
+            width: 200px; 
+            height: 40px; 
+            object-fit: contain; 
+            filter: brightness(0) invert(1) hue-rotate(180deg) saturate(0);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #1e3c72;
+            border-bottom: 3px solid #2a5298;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .content-section {
+            margin-bottom: 3rem;
+        }
+
+        .content-section h3 {
+            color: #2a5298;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .content-section p {
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .formula {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border-left: 4px solid #2a5298;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+        }
+
+        .example {
+            background: #e8f4fd;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .example h4 {
+            color: #1e3c72;
+            margin-bottom: 0.5rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: transform 0.3s;
+            margin-bottom: 2rem;
+        }
+
+        .back-button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #2a5298, #3a62a8);
+        }
+
+        .calculator-section {
+            background: #f0f8ff;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .calculator-title {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1e3c72;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .btn-calculate:hover {
+            transform: scale(1.05);
+        }
+
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #e8f4fd;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .summary {
+            background: #e8f5e9;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-top: 2rem;
+            border-left: 4px solid #4caf50;
+        }
+
+        .summary h3 {
+            color: #2e7d32;
+            margin-bottom: 1rem;
+        }
+
+        .summary ul {
+            padding-left: 1.5rem;
+        }
+
+        .summary li {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="../logo.png" alt="Logo" class="logo-img" />
+            <div class="logo-text">保险精算学习平台</div>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">返回首页</a>
+            <a href="life_table.html">下一节：生命表</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <a href="../index.html" class="back-button">← 返回首页</a>
+        
+        <h1 class="section-title">利息理论</h1>
+        
+        <div class="content-section">
+            <h3>1. 基本概念</h3>
+            <p>利息理论是金融数学的基础，研究资金在时间上的价值变化。在保险精算中，利息理论是计算保险费、准备金和理赔金额现值的重要工具。</p>
+            
+            <div class="formula">
+                利息 = 本金 × 利率 × 时间
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3>2. 单利与复利</h3>
+            <p><strong>单利</strong>是指只对本金计算利息，利息不再产生利息。</p>
+            <div class="formula">
+                S = P(1 + rt)
+            </div>
+            <p>其中：S为终值，P为本金，r为年利率，t为时间。</p>
+            
+            <p><strong>复利</strong>是指利息也参与计算利息，即"利滚利"。</p>
+            <div class="formula">
+                S = P(1 + r)^t
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3>3. 现值与终值</h3>
+            <p><strong>现值（Present Value）</strong>是指未来某一时点的资金按一定利率折算到现在的价值。</p>
+            <div class="formula">
+                PV = FV / (1 + r)^t
+            </div>
+            
+            <p><strong>终值（Future Value）</strong>是指现在一定量的资金按复利计算的未来某一时点的价值。</p>
+            <div class="formula">
+                FV = PV × (1 + r)^t
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3>4. 年金计算</h3>
+            <p><strong>年金</strong>是指在一定时期内，每隔相同时间支付或收取相等金额的款项。</p>
+            
+            <p><strong>年金现值公式（普通年金）：</strong></p>
+            <div class="formula">
+                PV = PMT × [1 - (1 + r)^(-n)] / r
+            </div>
+            
+            <p><strong>年金终值公式（普通年金）：</strong></p>
+            <div class="formula">
+                FV = PMT × [(1 + r)^n - 1] / r
+            </div>
+            
+            <p>其中：PMT为每期支付金额，r为每期利率，n为期数。</p>
+        </div>
+        
+        <div class="calculator-section">
+            <h3 class="calculator-title">利息计算工具</h3>
+            
+            <div class="input-group">
+                <label>本金（元）：</label>
+                <input type="number" id="principal" placeholder="请输入本金金额">
+            </div>
+            
+            <div class="input-group">
+                <label>年利率（%）：</label>
+                <input type="number" id="rate" placeholder="请输入年利率（如5表示5%）" step="0.01">
+            </div>
+            
+            <div class="input-group">
+                <label>时间（年）：</label>
+                <input type="number" id="time" placeholder="请输入时间（年）" step="0.01">
+            </div>
+            
+            <button class="btn-calculate" onclick="calculateInterest()">计算利息</button>
+            <button class="btn-calculate" onclick="calculateCompound()">计算复利</button>
+            
+            <div id="result" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="example">
+            <h4>实例分析</h4>
+            <p>假设某保险产品需要计算未来20年后的准备金现值，已知未来需要支付的金额为100万元，年利率为3%。</p>
+            <div class="formula">
+                现值 = 1,000,000 / (1 + 0.03)^20 = 553,676元
+            </div>
+            <p>这意味着保险公司现在需要准备约55.37万元作为准备金。</p>
+        </div>
+        
+        <div class="summary">
+            <h3>本节要点总结</h3>
+            <ul>
+                <li>利息理论是保险精算的基础，用于计算资金的时间价值</li>
+                <li>单利只对本金计息，复利对本金和利息都计息</li>
+                <li>现值是未来资金折算到现在的价值，终值是现在资金折算到未来的价值</li>
+                <li>年金是在一定时期内定期支付或收取的等额款项</li>
+                <li>在保险精算中，利息理论用于计算保险费、准备金和理赔现值</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="life_table.html" class="back-button">下一节：生命表 →</a>
+        </div>
+    </main>
+
+    <script>
+        function calculateInterest() {
+            const principal = parseFloat(document.getElementById('principal').value);
+            const rate = parseFloat(document.getElementById('rate').value) / 100;
+            const time = parseFloat(document.getElementById('time').value);
+            
+            if (isNaN(principal) || isNaN(rate) || isNaN(time)) {
+                alert('请填写所有字段');
+                return;
+            }
+            
+            const simpleInterest = principal * rate * time;
+            const totalAmount = principal + simpleInterest;
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <p><strong>单利计算结果：</strong></p>
+                <p>利息金额：${simpleInterest.toFixed(2)} 元</p>
+                <p>本息合计：${totalAmount.toFixed(2)} 元</p>
+            `;
+            resultDiv.style.display = 'block';
+        }
+        
+        function calculateCompound() {
+            const principal = parseFloat(document.getElementById('principal').value);
+            const rate = parseFloat(document.getElementById('rate').value) / 100;
+            const time = parseFloat(document.getElementById('time').value);
+            
+            if (isNaN(principal) || isNaN(rate) || isNaN(time)) {
+                alert('请填写所有字段');
+                return;
+            }
+            
+            const compoundAmount = principal * Math.pow(1 + rate, time);
+            const compoundInterest = compoundAmount - principal;
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <p><strong>复利计算结果：</strong></p>
+                <p>复利金额：${compoundInterest.toFixed(2)} 元</p>
+                <p>本息合计：${compoundAmount.toFixed(2)} 元</p>
+            `;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

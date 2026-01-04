@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>索赔次数（离散分布） - 保险精算学习平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-img {
+            width: 200px; 
+            height: 40px; 
+            object-fit: contain; 
+            filter: brightness(0) invert(1) hue-rotate(180deg) saturate(0);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #1e3c72;
+            border-bottom: 3px solid #2a5298;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .content-section {
+            margin-bottom: 3rem;
+        }
+
+        .content-section h3 {
+            color: #2a5298;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .content-section p {
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .formula {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border-left: 4px solid #2a5298;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #2a5298;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .example {
+            background: #e8f4fd;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .example h4 {
+            color: #1e3c72;
+            margin-bottom: 0.5rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: transform 0.3s;
+            margin-bottom: 2rem;
+        }
+
+        .back-button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #2a5298, #3a62a8);
+        }
+
+        .calculator-section {
+            background: #f0f8ff;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .calculator-title {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1e3c72;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .btn-calculate:hover {
+            transform: scale(1.05);
+        }
+
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #e8f4fd;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .summary {
+            background: #e8f5e9;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-top: 2rem;
+            border-left: 4px solid #4caf50;
+        }
+
+        .summary h3 {
+            color: #2e7d32;
+            margin-bottom: 1rem;
+        }
+
+        .summary ul {
+            padding-left: 1.5rem;
+        }
+
+        .summary li {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="../logo.png" alt="Logo" class="logo-img" />
+            <div class="logo-text">保险精算学习平台</div>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">返回首页</a>
+            <a href="claim_amount.html">下一节：索赔金额（连续分布）</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <a href="../index.html" class="back-button">← 返回首页</a>
+        
+        <h1 class="section-title">索赔次数（离散分布）</h1>
+        
+        <div class="content-section">
+            <h3>1. 索赔次数概述</h3>
+            <p>索赔次数是指在特定时期内发生的保险索赔事件的数量。在非寿险精算中，索赔次数通常被建模为离散型随机变量，其分布特征对保险费率厘定和风险评估至关重要。</p>
+        </div>
+        
+        <div class="content-section">
+            <h3>2. 泊松分布（Poisson Distribution）</h3>
+            <p>泊松分布是最常用的索赔次数分布模型，适用于描述稀有事件的发生次数。</p>
+            <div class="formula">
+                P(X = k) = (λ^k * e^(-λ)) / k!
+            </div>
+            <p>其中：λ为平均索赔次数（分布参数），k为实际索赔次数（k = 0, 1, 2, ...）</p>
+            
+            <p><strong>泊松分布的性质：</strong></p>
+            <ul>
+                <li>均值：E(X) = λ</li>
+                <li>方差：Var(X) = λ</li>
+                <li>标准差：σ = √λ</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h3>3. 二项分布（Binomial Distribution）</h3>
+            <p>当保险标的数量有限且每个标的都有相同的索赔概率时，索赔次数服从二项分布。</p>
+            <div class="formula">
+                P(X = k) = C(n,k) * p^k * (1-p)^(n-k)
+            </div>
+            <p>其中：n为保险标的数量，p为单个标的的索赔概率，k为实际索赔次数</p>
+            
+            <p><strong>二项分布的性质：</strong></p>
+            <ul>
+                <li>均值：E(X) = np</li>
+                <li>方差：Var(X) = np(1-p)</li>
+                <li>标准差：σ = √[np(1-p)]</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h3>4. 负二项分布（Negative Binomial Distribution）</h3>
+            <p>当索赔发生率存在异质性时，负二项分布是泊松分布的推广，可以更好地拟合实际数据。</p>
+            <div class="formula">
+                P(X = k) = C(k+r-1, k) * p^r * (1-p)^k
+            </div>
+            <p>其中：r为形状参数，p为成功概率，k为实际索赔次数</p>
+            
+            <p><strong>负二项分布的性质：</strong></p>
+            <ul>
+                <li>均值：E(X) = r(1-p)/p</li>
+                <li>方差：Var(X) = r(1-p)/p²</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h3>5. 分布选择指南</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>分布类型</th>
+                            <th>适用场景</th>
+                            <th>均值与方差关系</th>
+                            <th>参数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>泊松分布</td>
+                            <td>稀有事件，同质风险</td>
+                            <td>均值 = 方差</td>
+                            <td>λ（平均次数）</td>
+                        </tr>
+                        <tr>
+                            <td>二项分布</td>
+                            <td>固定数量标的，固定概率</td>
+                            <td>方差 < 均值</td>
+                            <td>n（总数），p（概率）</td>
+                        </tr>
+                        <tr>
+                            <td>负二项分布</td>
+                            <td>异质风险，超分散数据</td>
+                            <td>方差 > 均值</td>
+                            <td>r，p 或 μ，k</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="calculator-section">
+            <h3 class="calculator-title">泊松分布计算器</h3>
+            
+            <div class="input-group">
+                <label>平均索赔次数（λ）：</label>
+                <input type="number" id="lambda" placeholder="请输入平均索赔次数" step="0.01">
+            </div>
+            
+            <div class="input-group">
+                <label>具体索赔次数（k）：</label>
+                <input type="number" id="k" placeholder="请输入要计算的索赔次数" min="0">
+            </div>
+            
+            <button class="btn-calculate" onclick="calculatePoisson()">计算泊松概率</button>
+            
+            <div id="result" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="example">
+            <h4>实例分析</h4>
+            <p>某车险组合有1000辆车，平均每年每辆车发生1次索赔，试分析索赔次数的分布特征。</p>
+            <p>由于车辆数量大，单次索赔概率小，可使用泊松分布近似：</p>
+            <div class="formula">
+                λ = 1000 × 0.001 = 1<br>
+                P(X = 0) = e^(-1) ≈ 0.368<br>
+                P(X = 1) = e^(-1) × 1 ≈ 0.368<br>
+                P(X = 2) = e^(-1) × 1² / 2! ≈ 0.184
+            </div>
+            <p>这意味着该车险组合在一年内无索赔的概率约为36.8%。</p>
+        </div>
+        
+        <div class="summary">
+            <h3>本节要点总结</h3>
+            <ul>
+                <li>索赔次数是描述保险风险发生频率的重要指标</li>
+                <li>泊松分布适用于稀有事件和同质风险的建模</li>
+                <li>二项分布适用于固定数量标的和固定概率的情况</li>
+                <li>负二项分布适用于异质风险和超分散数据的建模</li>
+                <li>选择合适的分布模型对准确评估风险至关重要</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="present_value.html" class="back-button">← 上一节：精算现值</a>
+            <a href="claim_amount.html" class="back-button" style="margin-left: 1rem;">下一节：索赔金额（连续分布） →</a>
+        </div>
+    </main>
+
+    <script>
+        function calculatePoisson() {
+            const lambda = parseFloat(document.getElementById('lambda').value);
+            const k = parseInt(document.getElementById('k').value);
+            
+            if (isNaN(lambda) || isNaN(k) || k < 0) {
+                alert('请填写有效数值');
+                return;
+            }
+            
+            // 计算泊松概率
+            const factorial = (n) => {
+                if (n <= 1) return 1;
+                let result = 1;
+                for (let i = 2; i <= n; i++) {
+                    result *= i;
+                }
+                return result;
+            };
+            
+            const probability = (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
+            const mean = lambda;
+            const variance = lambda;
+            const stdDev = Math.sqrt(lambda);
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <p><strong>泊松分布计算结果：</strong></p>
+                <p>P(X = ${k}) = ${(probability * 100).toFixed(4)}%</p>
+                <p>均值：${mean}</p>
+                <p>方差：${variance}</p>
+                <p>标准差：${stdDev.toFixed(4)}</p>
+            `;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

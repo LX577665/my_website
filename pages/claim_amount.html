@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>索赔金额（连续分布） - 保险精算学习平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-img {
+            width: 200px; 
+            height: 40px; 
+            object-fit: contain; 
+            filter: brightness(0) invert(1) hue-rotate(180deg) saturate(0);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #1e3c72;
+            border-bottom: 3px solid #2a5298;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .content-section {
+            margin-bottom: 3rem;
+        }
+
+        .content-section h3 {
+            color: #2a5298;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .content-section p {
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .formula {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border-left: 4px solid #2a5298;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #2a5298;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .example {
+            background: #e8f4fd;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .example h4 {
+            color: #1e3c72;
+            margin-bottom: 0.5rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: transform 0.3s;
+            margin-bottom: 2rem;
+        }
+
+        .back-button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #2a5298, #3a62a8);
+        }
+
+        .calculator-section {
+            background: #f0f8ff;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .calculator-title {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1e3c72;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .btn-calculate:hover {
+            transform: scale(1.05);
+        }
+
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #e8f4fd;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .summary {
+            background: #e8f5e9;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-top: 2rem;
+            border-left: 4px solid #4caf50;
+        }
+
+        .summary h3 {
+            color: #2e7d32;
+            margin-bottom: 1rem;
+        }
+
+        .summary ul {
+            padding-left: 1.5rem;
+        }
+
+        .summary li {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="../logo.png" alt="Logo" class="logo-img" />
+            <div class="logo-text">保险精算学习平台</div>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">返回首页</a>
+            <a href="compound_distribution.html">下一节：复合分布</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <a href="../index.html" class="back-button">← 返回首页</a>
+        
+        <h1 class="section-title">索赔金额（连续分布）</h1>
+        
+        <div class="content-section">
+            <h3>1. 索赔金额概述</h3>
+            <p>索赔金额是指每次保险事故发生时，保险公司需要支付的赔偿金额。在非寿险精算中，索赔金额通常被建模为连续型随机变量，其分布特征对保险定价和风险管理至关重要。</p>
+        </div>
+        
+        <div class="content-section">
+            <h3>2. 指数分布（Exponential Distribution）</h3>
+            <p>指数分布是最简单的连续分布之一，常用于建模索赔金额的分布。</p>
+            <div class="formula">
+                f(x) = λ * e^(-λx), x ≥ 0
+            </div>
+            <p>其中：λ为分布参数（λ > 0）</p>
+            
+            <p><strong>指数分布的性质：</strong></p>
+            <ul>
+                <li>均值：E(X) = 1/λ</li>
+                <li>方差：Var(X) = 1/λ²</li>
+                <li>标准差：σ = 1/λ</li>
+                <li>失效率为常数λ（无记忆性）</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h3>3. 伽马分布（Gamma Distribution）</h3>
+            <p>伽马分布是指数分布的推广，具有更灵活的形状，适用于建模各种索赔金额分布。</p>
+            <div class="formula">
+                f(x) = [λ^α / Γ(α)] * x^(α-1) * e^(-λx), x ≥ 0
+            </div>
+            <p>其中：α为形状参数（α > 0），λ为率参数（λ > 0），Γ(α)为伽马函数</p>
+            
+            <p><strong>伽马分布的性质：</strong></p>
+            <ul>
+                <li>均值：E(X) = α/λ</li>
+                <li>方差：Var(X) = α/λ²</li>
+                <li>当α = 1时，伽马分布退化为指数分布</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h3>4. 对数正态分布（Lognormal Distribution）</h3>
+            <p>对数正态分布是保险精算中最常用的索赔金额分布之一，特别适用于建模具有长尾特征的损失数据。</p>
+            <p>若X服从对数正态分布，则ln(X)服从正态分布N(μ, σ²)</p>
+            <div class="formula">
+                f(x) = (1/(xσ√(2π))) * e^(-(ln(x)-μ)²/(2σ²)), x > 0
+            </div>
+            
+            <p><strong>对数正态分布的性质：</strong></p>
+            <ul>
+                <li>均值：E(X) = e^(μ + σ²/2)</li>
+                <li>方差：Var(X) = e^(2μ + σ²) * (e^σ² - 1)</li>
+                <li>具有长尾特征，适合建模大额索赔</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h3>5. 帕累托分布（Pareto Distribution）</h3>
+            <p>帕累托分布常用于建模极端损失，特别适用于重尾分布的建模。</p>
+            <div class="formula">
+                f(x) = α * x_m^α / x^(α+1), x ≥ x_m
+            </div>
+            <p>其中：α为形状参数（α > 0），x_m为尺度参数（x_m > 0）</p>
+            
+            <p><strong>帕累托分布的性质：</strong></p>
+            <ul>
+                <li>均值：E(X) = α * x_m / (α - 1) （当α > 1时）</li>
+                <li>方差：Var(X) = α * x_m² / [(α - 1)²(α - 2)] （当α > 2时）</li>
+                <li>具有重尾特征，适合建模大额损失</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h3>6. 分布选择指南</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>分布类型</th>
+                            <th>适用场景</th>
+                            <th>主要特征</th>
+                            <th>参数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>指数分布</td>
+                            <td>简单索赔金额建模</td>
+                            <td>无记忆性，轻尾</td>
+                            <td>λ（率参数）</td>
+                        </tr>
+                        <tr>
+                            <td>伽马分布</td>
+                            <td>灵活的索赔金额建模</td>
+                            <td>形状可变，中等尾部</td>
+                            <td>α（形状），λ（率）</td>
+                        </tr>
+                        <tr>
+                            <td>对数正态分布</td>
+                            <td>重尾索赔金额建模</td>
+                            <td>长尾，适合大额索赔</td>
+                            <td>μ，σ（对数空间参数）</td>
+                        </tr>
+                        <tr>
+                            <td>帕累托分布</td>
+                            <td>极端损失建模</td>
+                            <td>重尾，适合极值</td>
+                            <td>α（形状），x_m（尺度）</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="calculator-section">
+            <h3 class="calculator-title">对数正态分布计算器</h3>
+            
+            <div class="input-group">
+                <label>位置参数（μ）：</label>
+                <input type="number" id="mu" placeholder="请输入位置参数" step="0.01">
+            </div>
+            
+            <div class="input-group">
+                <label>尺度参数（σ）：</label>
+                <input type="number" id="sigma" placeholder="请输入尺度参数" step="0.01">
+            </div>
+            
+            <div class="input-group">
+                <label>索赔金额（x）：</label>
+                <input type="number" id="x" placeholder="请输入索赔金额" step="0.01">
+            </div>
+            
+            <button class="btn-calculate" onclick="calculateLognormal()">计算对数正态概率密度</button>
+            
+            <div id="result" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="example">
+            <h4>实例分析</h4>
+            <p>某财产保险的索赔金额服从对数正态分布，参数μ = 8，σ = 1.5，试分析索赔金额的分布特征。</p>
+            <div class="formula">
+                均值 = e^(μ + σ²/2) = e^(8 + 1.5²/2) = e^9.125 ≈ 9,188元<br>
+                方差 = e^(2μ + σ²) * (e^σ² - 1) = e^17.5 * (e^2.25 - 1) ≈ 9.188 × 10⁷<br>
+                标准差 ≈ 9,585元
+            </div>
+            <p>这意味着平均索赔金额约为9,188元，但由于对数正态分布的长尾特征，存在发生大额索赔的可能性。</p>
+        </div>
+        
+        <div class="summary">
+            <h3>本节要点总结</h3>
+            <ul>
+                <li>索赔金额是描述保险损失规模的重要指标</li>
+                <li>指数分布适用于简单索赔金额建模</li>
+                <li>伽马分布提供更灵活的建模选择</li>
+                <li>对数正态分布适合建模具有长尾特征的损失</li>
+                <li>帕累托分布适用于极端损失的建模</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="claim_frequency.html" class="back-button">← 上一节：索赔次数（离散分布）</a>
+            <a href="compound_distribution.html" class="back-button" style="margin-left: 1rem;">下一节：复合分布 →</a>
+        </div>
+    </main>
+
+    <script>
+        function calculateLognormal() {
+            const mu = parseFloat(document.getElementById('mu').value);
+            const sigma = parseFloat(document.getElementById('sigma').value);
+            const x = parseFloat(document.getElementById('x').value);
+            
+            if (isNaN(mu) || isNaN(sigma) || isNaN(x) || x <= 0 || sigma <= 0) {
+                alert('请填写有效数值（x > 0, σ > 0）');
+                return;
+            }
+            
+            // 计算对数正态分布的概率密度
+            const logX = Math.log(x);
+            const numerator = Math.pow(logX - mu, 2);
+            const denominator = 2 * Math.pow(sigma, 2);
+            const density = (1 / (x * sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-numerator / denominator);
+            
+            const mean = Math.exp(mu + Math.pow(sigma, 2) / 2);
+            const variance = Math.exp(2 * mu + Math.pow(sigma, 2)) * (Math.exp(Math.pow(sigma, 2)) - 1);
+            const stdDev = Math.sqrt(variance);
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <p><strong>对数正态分布计算结果：</strong></p>
+                <p>概率密度 f(${x}) = ${density.toFixed(6)}</p>
+                <p>均值：${mean.toFixed(2)}</p>
+                <p>方差：${variance.toFixed(2)}</p>
+                <p>标准差：${stdDev.toFixed(2)}</p>
+            `;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
