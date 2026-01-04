@@ -274,6 +274,21 @@
             width: 100%;
         }
 
+        
+       /* 让图片、视频等媒体元素自适应容器 */
+            img, video, iframe {
+             max-width: 100%;
+            height: auto;
+            }
+
+        /* 容器最大宽度限制，避免在超大屏上拉得太宽 */
+            .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            } 
+        
         /* 响应式设计 */
         @media (max-width: 768px) {
             .sidebar {
